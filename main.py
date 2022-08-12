@@ -41,7 +41,7 @@ test_alert_df = alert_df.iloc[int(len(alert_df)*0.3):]
 
 FRAC_ALERT_TEXTS = train_alert_df.alert.mean()
 
-#get all words from alert and non-alert datasets
+#get all words from alert and clear datasets
 train_alert_words = ' '.join(train_alert_df[train_alert_df.alert == True].text).split(' ')
 train_clear_words = ' '.join(train_alert_df[train_alert_df.alert == False].text).split(' ')
 
@@ -58,12 +58,12 @@ for w in common_words:
 
 
 # REQUIREMENT MET - decision-support functionality
-# function to predict if a message is alert or not alert
+# function to predict if a message should be flagged with an alert or cleared
 def predict_alert(t, verbose=False):
-    #if some word doesnt appear in either alert or non-alert BOW, disregard it
+    #if some word doesnt appear in either alert or clear BOW, disregard it
     valid_words = [w for w in t if w in train_alert_bow]
     
-    #get the probabilities of each valid word showing up in alert and non-alert BOW
+    #get the probabilities of each valid word showing up in alert and clear BOW
     alert_probs = [train_alert_bow[w] for w in valid_words]
     clear_probs = [train_clear_bow[w] for w in valid_words]
     
@@ -81,7 +81,7 @@ def predict_alert(t, verbose=False):
     #calculate alert score as sum of logs for all probabilities
     alert_score = sum([np.log(p) for p in alert_probs]) + np.log(FRAC_ALERT_TEXTS)
     
-    #calculate non-alert score as sum of logs for all probabilities
+    #calculate clear score as sum of logs for all probabilities
     clear_score = sum([np.log(p) for p in clear_probs]) + np.log(1-FRAC_ALERT_TEXTS)
     
     #if verbose, report the two scores
