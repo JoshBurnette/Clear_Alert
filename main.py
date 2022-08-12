@@ -3,9 +3,13 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import string
 
+# REQUIREMENT MET - collected or available datasets
 #read dataset
 alert_df = pd.read_csv('clear_alert.csv', encoding="ISO-8859-1")
 
+
+# REQUIREMENT MET - ability to support featurizing, parsing, cleaning, and wrangling datasets
+# REQUIREMENT MET - methods and algorithms supporting data exploration and preparation
 #subset and rename columns
 alert_df = alert_df[['v1', 'v2']]
 alert_df.rename(columns={'v1': 'alert', 'v2': 'text'}, inplace=True)
@@ -18,6 +22,8 @@ alert_df.text = alert_df.text.apply(lambda t: t.lower().translate(str.maketrans(
 
 #shuffle
 alert_df = alert_df.sample(frac=1)
+
+
 
 for t in alert_df[alert_df.alert == True].iloc[:5].text:
     print(t)
@@ -51,6 +57,7 @@ for w in common_words:
 
 
 
+# REQUIREMENT MET - decision-support functionality
 # function to predict if a message is alert or not alert
 def predict_alert(t, verbose=False):
     #if some word doesnt appear in either alert or non-alert BOW, disregard it
@@ -60,6 +67,8 @@ def predict_alert(t, verbose=False):
     alert_probs = [train_alert_bow[w] for w in valid_words]
     clear_probs = [train_clear_bow[w] for w in valid_words]
     
+    
+    # REQUIREMENT MET - data visualization functionalities for data exploration and inspection
     #print probs if requested
     if verbose:
         data_df = pd.DataFrame()
@@ -93,6 +102,8 @@ def predict_alert(t, verbose=False):
     #if alert score is higher, mark this as alert
     return (alert_score >= clear_score)
 
+
+# REQUIREMENT MET - implementation of interactive queries ***** MAYBE
 # TEST 1
 print("Test 1")
 predict_alert('i want to kill and destroy with a gun'.split(), verbose=True)
@@ -115,6 +126,8 @@ print("||||||||||||||||||||||||")
 print("Test 4: TT Test")
 predict_alert('shoot my gun and kill to death'.split(), verbose=True)
 
+
+# REQUIREMENT MET - functionalities to evaluate the accuracy of the data product
 predictions = test_alert_df.text.apply(lambda t: predict_alert(t.split()))
 
 frac_alert_messages_correctly_detected = np.sum((predictions == True) & (test_alert_df.alert == True)) / np.sum(test_alert_df.alert == True)
