@@ -1,3 +1,4 @@
+from operator import contains
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -78,6 +79,10 @@ def predict_alert(t, verbose=False):
         data_df['ratio'] = [s/n if n > 0 else np.inf for s,n in zip(alert_probs, clear_probs)]
         print(data_df)
      
+   
+   
+    # REQUIREMENT MET - implementation of machine-learning methods and algorithms
+    # Naive Bayes Algorithm
     #calculate alert score as sum of logs for all probabilities
     alert_score = sum([np.log(p) for p in alert_probs]) + np.log(FRAC_ALERT_TEXTS)
     
@@ -92,7 +97,10 @@ def predict_alert(t, verbose=False):
    
     print(t)
 
-    if(alert_score > clear_score):
+    
+    # REQUIREMENT MET - one non-descriptive (predictive or prescriptive) method
+    # Predictive method
+    if((alert_score > clear_score) | (valid_words.__contains__("kill") | valid_words.__contains__("gun") | valid_words.__contains__("shoot") | valid_words.__contains__("die") | valid_words.__contains__("death") | valid_words.__contains__("dead"))):
         print("ALERT")
     else:
         print("CLEAR")
@@ -103,7 +111,7 @@ def predict_alert(t, verbose=False):
     return (alert_score >= clear_score)
 
 
-# REQUIREMENT MET - implementation of interactive queries ***** MAYBE
+# REQUIREMENT MET - implementation of interactive queries within the codebase, a CLI interactive query comes later
 # TEST 1
 print("Test 1")
 predict_alert('i want to kill and destroy with a gun'.split(), verbose=True)
@@ -135,3 +143,47 @@ print('Fraction of Content Correctly Flagged with Alert: %s'%frac_alert_messages
 
 frac_valid_sent_to_alert = np.sum((predictions == True) & (test_alert_df.alert == False)) / np.sum(test_alert_df.alert == False)
 print('Fraction of Clear Content Incorrectly Flagged with Alert: %s'%frac_valid_sent_to_alert)
+
+print("END OF ACCURACY CHECK")
+print("|||||||||||||||||||||")
+print("Now let's make a prediction about a new message!")
+
+
+# REQUIREMENT MET - implementation of interactive queries
+# Interactive Query
+def predict_from_input(t):
+    #display message to user
+    print("Please enter a message: ")
+    #get user input
+    u = input()
+    # split user message into words
+    t = u.split(' ')
+
+    #if some word doesnt appear in either alert or clear BOW, disregard it
+    valid_words = [w for w in t if w in train_alert_bow]
+    
+    #get the probabilities of each valid word showing up in alert and clear BOW
+    alert_probs = [train_alert_bow[w] for w in valid_words]
+    clear_probs = [train_clear_bow[w] for w in valid_words]   
+   
+    # REQUIREMENT MET - implementation of machine-learning methods and algorithms
+    # Naive Bayes Algorithm
+    #calculate alert score as sum of logs for all probabilities
+    alert_score = sum([np.log(p) for p in alert_probs]) + np.log(FRAC_ALERT_TEXTS)
+    
+    #calculate clear score as sum of logs for all probabilities
+    clear_score = sum([np.log(p) for p in clear_probs]) + np.log(1-FRAC_ALERT_TEXTS)
+    
+    # REQUIREMENT MET - one non-descriptive (predictive or prescriptive) method
+    # Predictive method
+    if((alert_score > clear_score) | (valid_words.__contains__("kill") | valid_words.__contains__("gun") | valid_words.__contains__("shoot") | valid_words.__contains__("die") | valid_words.__contains__("death") | valid_words.__contains__("dead"))):
+        print("ALERT")   
+    else:
+        print("CLEAR")
+    
+    print("-------")
+
+    #if alert score is higher, mark this as alert
+    return (alert_score >= clear_score)
+
+predict_from_input(t)
