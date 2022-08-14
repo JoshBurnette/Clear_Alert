@@ -96,12 +96,13 @@ def predict_alert(t, verbose=False):
         
    
     print(t)
-
     
     # REQUIREMENT MET - one non-descriptive (predictive or prescriptive) method
     # Predictive method
     if((alert_score > clear_score) | (valid_words.__contains__("kill") | valid_words.__contains__("gun") | valid_words.__contains__("shoot") | valid_words.__contains__("die") | valid_words.__contains__("death") | valid_words.__contains__("dead"))):
         print("ALERT")
+        if(alert_score < clear_score):
+            print('Buzzword Found: Automatic Alert')
     else:
         print("CLEAR")
     
@@ -151,39 +152,20 @@ print("Now let's make a prediction about a new message!")
 
 # REQUIREMENT MET - implementation of interactive queries
 # Interactive Query
-def predict_from_input(t):
+def get_user_input():
+    #ask if user wants a detailed report
+    print("Would you like a detailed report along with the prediction? y or n")
+    detailed = input()
+    if(detailed.lower().__contains__("y")):
+        verbose = True
+    else:
+        verbose = False
     #display message to user
     print("Please enter a message: ")
     #get user input
-    u = input()
+    sentence = input()
     # split user message into words
-    t = u.split(' ')
+    words = sentence.lower().split()
+    predict_alert(words, verbose)
 
-    #if some word doesnt appear in either alert or clear BOW, disregard it
-    valid_words = [w for w in t if w in train_alert_bow]
-    
-    #get the probabilities of each valid word showing up in alert and clear BOW
-    alert_probs = [train_alert_bow[w] for w in valid_words]
-    clear_probs = [train_clear_bow[w] for w in valid_words]   
-   
-    # REQUIREMENT MET - implementation of machine-learning methods and algorithms
-    # Naive Bayes Algorithm
-    #calculate alert score as sum of logs for all probabilities
-    alert_score = sum([np.log(p) for p in alert_probs]) + np.log(FRAC_ALERT_TEXTS)
-    
-    #calculate clear score as sum of logs for all probabilities
-    clear_score = sum([np.log(p) for p in clear_probs]) + np.log(1-FRAC_ALERT_TEXTS)
-    
-    # REQUIREMENT MET - one non-descriptive (predictive or prescriptive) method
-    # Predictive method
-    if((alert_score > clear_score) | (valid_words.__contains__("kill") | valid_words.__contains__("gun") | valid_words.__contains__("shoot") | valid_words.__contains__("die") | valid_words.__contains__("death") | valid_words.__contains__("dead"))):
-        print("ALERT")   
-    else:
-        print("CLEAR")
-    
-    print("-------")
-
-    #if alert score is higher, mark this as alert
-    return (alert_score >= clear_score)
-
-predict_from_input(t)
+get_user_input()
