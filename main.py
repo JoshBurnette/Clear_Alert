@@ -14,6 +14,8 @@ alert_df = pd.read_csv('clear_alert.csv', encoding="ISO-8859-1")
 #subset and rename columns
 alert_df = alert_df[['v1', 'v2']]
 alert_df.rename(columns={'v1': 'alert', 'v2': 'text'}, inplace=True)
+# count occurences of alert and clear in alert column (column 1)
+alert_df["alert"].value_counts(normalize = True)
 
 #convert alert column to binary
 alert_df.alert = alert_df.alert.apply(lambda s: True if s=='alert' else False)
@@ -96,6 +98,8 @@ def predict_alert(t, verbose=False):
         
    
     print(t)
+
+    buzzwords = ["kill", "gun", "shoot", "die", "death", "dead"]
     
     # REQUIREMENT MET - one non-descriptive (predictive or prescriptive) method
     # Predictive method
